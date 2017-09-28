@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C76AC833-06E7-4E6A-A097-83568F4930BE}</ProjectGuid>
+    <ProjectGuid>{54DB48AB-C419-423E-9802-516AC686FF5D}</ProjectGuid>
     <RootNamespace>E04</RootNamespace>
     <ProjectName>E04</ProjectName>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>

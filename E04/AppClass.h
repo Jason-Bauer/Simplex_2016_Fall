@@ -11,13 +11,67 @@ Date: 2017/05
 #include "imgui\ImGuiObject.h"
 
 #include "MyMesh.h"
-
+#include <list>
+#include <vector>
 class Application
 {
-	MyMesh* m_pMesh = nullptr;
-	MyMesh* m_pMesh1 = nullptr;
+	std::vector<MyMesh*> meshes = std::vector<MyMesh*>();
+	std::vector<matrix4> matricies= std::vector<matrix4>();
+	std::vector<vector3> positions = std::vector<vector3>();
 
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	MyMesh* m_pMesh0 = nullptr;
+	MyMesh* m_pMesh1 = nullptr;
+	MyMesh* m_pMesh2 = nullptr;
+	MyMesh* m_pMesh3 = nullptr;
+	MyMesh* m_pMesh4 = nullptr;
+	MyMesh* m_pMesh5 = nullptr;
+	MyMesh* m_pMesh6 = nullptr;
+	MyMesh* m_pMesh7 = nullptr;
+	MyMesh* m_pMesh8 = nullptr;
+	MyMesh* m_pMesh9 = nullptr;
+	MyMesh* m_pMesh10 = nullptr;
+	MyMesh* m_pMesh11 = nullptr;
+	MyMesh* m_pMesh12 = nullptr;
+	MyMesh* m_pMesh13 = nullptr;
+	MyMesh* m_pMesh14 = nullptr;
+	MyMesh* m_pMesh15 = nullptr;
+	MyMesh* m_pMesh16 = nullptr;
+	MyMesh* m_pMesh17 = nullptr;
+	MyMesh* m_pMesh18 = nullptr;
+	MyMesh* m_pMesh19 = nullptr;
+	MyMesh* m_pMesh20 = nullptr;
+	MyMesh* m_pMesh21 = nullptr;
+	MyMesh* m_pMesh22 = nullptr;
+	MyMesh* m_pMesh23= nullptr;
+	MyMesh* m_pMesh24= nullptr;
+	MyMesh* m_pMesh25= nullptr;
+	MyMesh* m_pMesh26= nullptr;
+	MyMesh* m_pMesh27= nullptr;
+	MyMesh* m_pMesh28= nullptr;
+	MyMesh* m_pMesh29= nullptr;
+	MyMesh* m_pMesh30= nullptr;
+	MyMesh* m_pMesh31= nullptr;
+	MyMesh* m_pMesh32= nullptr;
+	MyMesh* m_pMesh33= nullptr;
+	MyMesh* m_pMesh34= nullptr;
+	MyMesh* m_pMesh35= nullptr;
+	MyMesh* m_pMesh36= nullptr;
+	MyMesh* m_pMesh37= nullptr;
+	MyMesh* m_pMesh38= nullptr;
+	MyMesh* m_pMesh39= nullptr;
+	MyMesh* m_pMesh40= nullptr;
+	MyMesh* m_pMesh41= nullptr;
+	MyMesh* m_pMesh42= nullptr;
+	MyMesh* m_pMesh43= nullptr;
+	MyMesh* m_pMesh44= nullptr;
+	MyMesh* m_pMesh45= nullptr;
+	MyMesh* m_pMesh46= nullptr;
+	MyMesh* m_pMesh47= nullptr;
+	MyMesh* m_pMesh48= nullptr;
+	
+
+
+	String m_sProgrammer = "Jason Bauer -- jcb5944@g.rit.edu";
 private:
 	static ImGuiObject gui; //GUI object
 
