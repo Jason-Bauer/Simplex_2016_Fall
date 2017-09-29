@@ -150,7 +150,9 @@ void Application::Run(void)
 		ProcessKeyboard();//Continuous events
 		ProcessJoystick();//Continuous events
 		Update();
+		//glCullFace(GL_FRONT_AND_BACK);
 		Display();
+		
 	}
 
 	//Write configuration of this program

@@ -274,9 +274,29 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 
 	Release();
 	Init();
+	std::vector<vector3> points;
+	double dAngle = 360.0 / a_nSubdivisions;
+	vector3 point0(0, a_fHeight, 0);
+	points.push_back(point0);
+	vector3 point1(0, 0, 0);
+	points.push_back(point1);
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fRadius);
+		points.push_back(point2);
+	}
+
+	for (int i = 0; i <= a_nSubdivisions; i++) {
+		AddTri(points[0], points[i], points[i + 1]);
+	}
+	for (int i = 0; i <= a_nSubdivisions; i++) {
+		AddTri(points[i+1], points[i], points[1]);
+	}
+	AddTri(points[0], points[points.size()-1], points[2]);
+	AddTri(points[2], points[points.size() - 1], points[1]);
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
 
 	// Adding information about color
@@ -298,9 +318,39 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 
 	Release();
 	Init();
+	std::vector<vector3> pointst;
+	std::vector<vector3> pointsb;
+	double dAngle = 360.0 / a_nSubdivisions;
+	vector3 point0(0, a_fHeight, 0);
+	pointst.push_back(point0);
+	vector3 point1(0, 0, 0);
+	pointsb.push_back(point1);
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fRadius);
+		pointsb.push_back(point2);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius, a_fHeight, glm::cos(glm::radians(dAngle * i))*a_fRadius);
+		pointst.push_back(point2);
+	}
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		AddTri(pointsb[i + 1], pointsb[i], pointsb[0]);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		AddTri(pointst[i + 1], pointst[0],pointst[i]);
+	}
+	AddTri( pointsb[pointsb.size() - 1], pointsb[0], pointsb[1]);
+	AddTri( pointst[pointst.size() - 1], pointst[1], pointst[0]);
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		AddQuad(pointsb[i], pointsb[i + 1], pointst[i], pointst[i + 1]);
+	}
+	AddQuad(pointsb[pointsb.size() - 1], pointsb[1], pointst[pointst.size() - 1], pointst[1]);
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
 
 	// Adding information about color
@@ -329,8 +379,48 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Release();
 	Init();
 
+	std::vector<vector3> pointst;
+	std::vector<vector3> pointsb;
+	std::vector<vector3> pointsti;
+	std::vector<vector3> pointsbi;
+	double dAngle = 360.0 / a_nSubdivisions;
+	
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fOuterRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fOuterRadius);
+		pointsb.push_back(point2);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fOuterRadius, a_fHeight, glm::cos(glm::radians(dAngle * i))*a_fOuterRadius);
+		pointst.push_back(point2);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fInnerRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fInnerRadius);
+		pointsbi.push_back(point2);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fInnerRadius, a_fHeight, glm::cos(glm::radians(dAngle * i))*a_fInnerRadius);
+		pointsti.push_back(point2);
+	}
+
+	for (int i = 0; i < a_nSubdivisions-1; i++) {
+		AddQuad(pointsb[i], pointsb[i + 1], pointst[i], pointst[i + 1]);
+	}
+	for (int i = 0; i < a_nSubdivisions-1; i++) {
+		AddQuad( pointsti[i], pointsti[i + 1], pointsbi[i], pointsbi[i + 1]);
+	}
+	for (int i = 0; i < a_nSubdivisions - 1; i++) {
+		AddQuad( pointst[i], pointst[i + 1], pointsti[i], pointsti[i + 1]);
+	}
+	for (int i = 0; i < a_nSubdivisions - 1; i++) {
+		AddQuad( pointsbi[i], pointsbi[i + 1],pointsb[i], pointsb[i + 1]);
+	}
+	AddQuad( pointsbi[pointsbi.size() - 1], pointsbi[0], pointsb[pointsb.size() - 1], pointsb[0]);
+	AddQuad(pointst[pointst.size() - 1], pointst[0], pointsti[pointsti.size() - 1], pointsti[0]);
+	AddQuad(pointsb[pointsb.size() - 1], pointsb[0], pointst[pointst.size() - 1], pointst[0]);
+	AddQuad( pointsti[pointsti.size() - 1], pointsti[0], pointsbi[pointsbi.size() - 1], pointsbi[0]);
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
 	// -------------------------------
 
 	// Adding information about color
@@ -385,9 +475,9 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 	Release();
 	Init();
-
+	std::vector<vector3> pointst;
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
 
 	// Adding information about color
