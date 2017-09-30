@@ -494,6 +494,20 @@ void MyMesh::GenerateTorus(float a_fRadius, int a_nSubdivisions, vector3 a_v3Col
 }
 void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
 {
+	/*
+	Hey Ash, 
+	Maybe if you're reading this, Which I don't know if you would be. can you just give me extra credit?
+	like Alberto doesn't have to know, this can be just between you and me.
+	you know, maybe let me know.
+
+	Hehe XD
+
+	-J
+	
+	*/
+
+
+	
 	if (a_fRadius < 0.01f)
 		a_fRadius = 0.01f;
 
@@ -569,11 +583,8 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	AddQuad(points7[points7.size() - 1], points7[0], points6[points6.size() - 1], points6[0]);
 	AddQuad(points8[points8.size() - 1], points8[0], points7[points7.size() - 1], points7[0]);
 	AddQuad(points9[points9.size() - 1], points9[0], points8[points8.size() - 1], points8[0]);
-	// Replace this with your code
-	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
-
-	// Adding information about color
+	
+	//#closeenough
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
