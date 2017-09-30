@@ -42,7 +42,7 @@ void Application::DrawGUI(void)
 			ImGui::Text("	 F6: Cylinder\n");
 			ImGui::Text("	 F7: Tube\n");
 			ImGui::Text("	 F8: Sphere\n");
-			ImGui::Text("	 F9: Torus\n");
+			ImGui::Text("	 F9: Onion\n");
 			ImGui::Text("	F10: Cube\n");
 
 		}

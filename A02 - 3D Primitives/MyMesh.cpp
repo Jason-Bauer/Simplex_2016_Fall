@@ -329,16 +329,12 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	for (int i = 0; i < a_nSubdivisions; i++) {
 		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fRadius);
 		pointsb.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius, a_fHeight, glm::cos(glm::radians(dAngle * i))*a_fRadius);
-		pointst.push_back(point2);
+		vector3 point3(glm::sin(glm::radians(dAngle * i))*a_fRadius, a_fHeight, glm::cos(glm::radians(dAngle * i))*a_fRadius);
+		pointst.push_back(point3);
 	}
 
 	for (int i = 0; i < a_nSubdivisions; i++) {
 		AddTri(pointsb[i + 1], pointsb[i], pointsb[0]);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
 		AddTri(pointst[i + 1], pointst[0],pointst[i]);
 	}
 	AddTri( pointsb[pointsb.size() - 1], pointsb[0], pointsb[1]);
@@ -389,30 +385,18 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	for (int i = 0; i < a_nSubdivisions; i++) {
 		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fOuterRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fOuterRadius);
 		pointsb.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fOuterRadius, a_fHeight, glm::cos(glm::radians(dAngle * i))*a_fOuterRadius);
-		pointst.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fInnerRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fInnerRadius);
-		pointsbi.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fInnerRadius, a_fHeight, glm::cos(glm::radians(dAngle * i))*a_fInnerRadius);
-		pointsti.push_back(point2);
+		vector3 point3(glm::sin(glm::radians(dAngle * i))*a_fOuterRadius, a_fHeight, glm::cos(glm::radians(dAngle * i))*a_fOuterRadius);
+		pointst.push_back(point3);
+		vector3 point4(glm::sin(glm::radians(dAngle * i))*a_fInnerRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fInnerRadius);
+		pointsbi.push_back(point4);
+		vector3 point5(glm::sin(glm::radians(dAngle * i))*a_fInnerRadius, a_fHeight, glm::cos(glm::radians(dAngle * i))*a_fInnerRadius);
+		pointsti.push_back(point5);
 	}
 
 	for (int i = 0; i < a_nSubdivisions-1; i++) {
 		AddQuad(pointsb[i], pointsb[i + 1], pointst[i], pointst[i + 1]);
-	}
-	for (int i = 0; i < a_nSubdivisions-1; i++) {
 		AddQuad( pointsti[i], pointsti[i + 1], pointsbi[i], pointsbi[i + 1]);
-	}
-	for (int i = 0; i < a_nSubdivisions - 1; i++) {
 		AddQuad( pointst[i], pointst[i + 1], pointsti[i], pointsti[i + 1]);
-	}
-	for (int i = 0; i < a_nSubdivisions - 1; i++) {
 		AddQuad( pointsbi[i], pointsbi[i + 1],pointsb[i], pointsb[i + 1]);
 	}
 	AddQuad( pointsbi[pointsbi.size() - 1], pointsbi[0], pointsb[pointsb.size() - 1], pointsb[0]);
@@ -427,34 +411,83 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
-void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSubdivisionsA, int a_nSubdivisionsB, vector3 a_v3Color)
+void MyMesh::GenerateTorus(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
 {
-	if (a_fOuterRadius < 0.01f)
-		a_fOuterRadius = 0.01f;
+	if (a_fRadius < 0.01f)
+		a_fRadius = 0.01f;
 
-	if (a_fInnerRadius < 0.005f)
-		a_fInnerRadius = 0.005f;
+	//Sets minimum and maximum of subdivisions
+	if (a_nSubdivisions < 1)
+	{
+		GenerateCube(a_fRadius * 2.0f, a_v3Color);
+		return;
+	}
 
-	if (a_fInnerRadius > a_fOuterRadius)
-		std::swap(a_fInnerRadius, a_fOuterRadius);
-
-	if (a_nSubdivisionsA < 3)
-		a_nSubdivisionsA = 3;
-	if (a_nSubdivisionsA > 360)
-		a_nSubdivisionsA = 360;
-
-	if (a_nSubdivisionsB < 3)
-		a_nSubdivisionsB = 3;
-	if (a_nSubdivisionsB > 360)
-		a_nSubdivisionsB = 360;
 
 	Release();
 	Init();
+	std::vector<vector3> points1;
+	std::vector<vector3> points2;
+	std::vector<vector3> points3;
+	std::vector<vector3> points4;
+	std::vector<vector3> points5;
+	std::vector<vector3> points6;
+	std::vector<vector3> points7;
+	std::vector<vector3> points8;
+	std::vector<vector3> points9;
+	a_nSubdivisions = 10;
+	double dAngle = 360.0 / a_nSubdivisions;
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	vector3 point0(0, a_fRadius*.9, 0);
+	vector3 point1(0, -a_fRadius*.9, 0);
 
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(20.0f)), a_fRadius*.8, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(20.0f)));
+		points1.push_back(point2);
+		vector3 point3(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(40.0f)), a_fRadius*.6, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(40.0f)));
+		points2.push_back(point3);
+		vector3 point4(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(60.0f)), a_fRadius*.4, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(60.0f)));
+		points3.push_back(point4);
+		vector3 point5(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(80.0f)), a_fRadius*.2, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(80.0f)));
+		points4.push_back(point5);
+		vector3 point6(glm::sin(glm::radians(dAngle * i))*a_fRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fRadius);
+		points5.push_back(point6);
+		vector3 point7(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(20.0f)), -a_fRadius*.8, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(20.0f)));
+		points9.push_back(point7);
+		vector3 point8(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(40.0f)), -a_fRadius*.6, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(40.0f)));
+		points8.push_back(point8);
+		vector3 point9(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(60.0f)), -a_fRadius*.4, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(60.0f)));
+		points7.push_back(point9);
+		vector3 point12(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(80.0f)), -a_fRadius*.2, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(80.0f)));
+		points6.push_back(point12);
+	}
+
+	//tris
+	for (int i = 0; i < a_nSubdivisions - 1; i++) {
+		AddTri(points1[i], points1[i + 1], point0);
+		AddTri(points9[i], point1, points9[i + 1]);
+	}
+	//quads
+	for (int i = 0; i < a_nSubdivisions - 1; i++) {
+		AddQuad(points2[i], points2[i + 1], points1[i], points1[i + 1]);
+		AddQuad(points3[i], points3[i + 1], points2[i], points2[i + 1]);
+		AddQuad(points4[i], points4[i + 1], points3[i], points3[i + 1]);
+		AddQuad(points5[i], points5[i + 1], points4[i], points4[i + 1]);
+		AddQuad(points6[i], points6[i + 1], points5[i], points5[i + 1]);
+		AddQuad(points7[i], points7[i + 1], points6[i], points6[i + 1]);
+		AddQuad(points8[i], points8[i + 1], points7[i], points7[i + 1]);
+		AddQuad(points9[i], points9[i + 1], points8[i], points8[i + 1]);
+	}
+	AddTri(points1[points1.size() - 1], points1[0], point0);
+	AddTri(points9[points9.size() - 1], point1, points9[0]);
+	AddQuad(points2[points2.size() - 1], points2[0], points1[points1.size() - 1], points1[0]);
+	AddQuad(points3[points3.size() - 1], points3[0], points2[points2.size() - 1], points2[0]);
+	AddQuad(points4[points4.size() - 1], points4[0], points3[points3.size() - 1], points3[0]);
+	AddQuad(points5[points5.size() - 1], points5[0], points4[points4.size() - 1], points4[0]);
+	AddQuad(points6[points6.size() - 1], points6[0], points5[points5.size() - 1], points5[0]);
+	AddQuad(points7[points7.size() - 1], points7[0], points6[points6.size() - 1], points6[0]);
+	AddQuad(points8[points8.size() - 1], points8[0], points7[points7.size() - 1], points7[0]);
+	AddQuad(points9[points9.size() - 1], points9[0], points8[points8.size() - 1], points8[0]);
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
@@ -483,46 +516,31 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	std::vector<vector3> points7;
 	std::vector<vector3> points8;
 	std::vector<vector3> points9;
+	
 	double dAngle = 360.0 / a_nSubdivisions;
 	
 	vector3 point0(0, a_fRadius, 0);
 	vector3 point1(0, -a_fRadius, 0);
 	
 	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*.2, a_fRadius*.8, glm::cos(glm::radians(dAngle * i))*a_fRadius*.2);
+		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(25.0f)), a_fRadius*.9, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(25.0f)));
 		points1.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*.4, a_fRadius*.6, glm::cos(glm::radians(dAngle * i))*a_fRadius*.4);
-		points2.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*.6, a_fRadius*.4, glm::cos(glm::radians(dAngle * i))*a_fRadius*.6);
-		points3.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*.8, a_fRadius*.2, glm::cos(glm::radians(dAngle * i))*a_fRadius*.8);
-		points4.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fRadius);
-		points5.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*.2, -a_fRadius*.8, glm::cos(glm::radians(dAngle * i))*a_fRadius*.2);
-		points9.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*.4,-a_fRadius*.6, glm::cos(glm::radians(dAngle * i))*a_fRadius*.4);
-		points8.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*.6, -a_fRadius*.4, glm::cos(glm::radians(dAngle * i))*a_fRadius*.6);
-		points7.push_back(point2);
-	}
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		vector3 point2(glm::sin(glm::radians(dAngle * i))*a_fRadius*.8,-a_fRadius*.2, glm::cos(glm::radians(dAngle * i))*a_fRadius*.8);
-		points6.push_back(point2);
+		vector3 point3(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(37.5f)), a_fRadius*.8, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(37.5f)));
+		points2.push_back(point3);
+		vector3 point4(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(55.0f)), a_fRadius*.65, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(55.0f)));
+		points3.push_back(point4);
+		vector3 point5(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(70.0f)), a_fRadius*.35, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(75.0f)));
+		points4.push_back(point5);
+		vector3 point6(glm::sin(glm::radians(dAngle * i))*a_fRadius, 0, glm::cos(glm::radians(dAngle * i))*a_fRadius);
+		points5.push_back(point6);
+		vector3 point7(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(25.0f)), -a_fRadius*.9, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(25.0f)));
+		points9.push_back(point7);
+		vector3 point8(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(35.0f)),-a_fRadius*.8, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(35.0f)));
+		points8.push_back(point8);
+		vector3 point9(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(55.0f)), -a_fRadius*.65, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(55.0f)));
+		points7.push_back(point9);
+		vector3 point12(glm::sin(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(75.0f)),-a_fRadius*.35, glm::cos(glm::radians(dAngle * i))*a_fRadius*glm::sin(glm::radians(75.0f)));
+		points6.push_back(point12);
 	}
 
 	//tris
@@ -530,7 +548,6 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		AddTri(points1[i], points1[i + 1], point0);
 		AddTri(points9[i], point1, points9[i + 1]);
 	}
-
 	//quads
 	for (int i = 0; i < a_nSubdivisions - 1; i++) {
 		AddQuad(points2[i], points2[i + 1], points1[i], points1[i + 1]);
