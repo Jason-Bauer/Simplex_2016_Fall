@@ -2,7 +2,7 @@
 void Application::InitVariables(void)
 {
 	////Change this to your name and email
-	//m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Jason Bauer -  jcb5944@g.rit.edu";
 
 	////Alberto needed this at this position for software recording.
 	//m_pWindow->setPosition(sf::Vector2i(710, 0));
@@ -37,10 +37,33 @@ void Application::InitVariables(void)
 	uint uSides = 3; //start with the minimal 3 sides
 	for (uint i = uSides; i < m_uOrbits + uSides; i++)
 	{
+		std::vector<vector3> stops;
+		m_stops.push_back(stops);
 		vector3 v3Color = WaveLengthToRGB(uColor); //calculate color based on wavelength
 		m_shapeList.push_back(m_pMeshMngr->GenerateTorus(fSize, fSize - 0.1f, 3, i, v3Color)); //generate a custom torus and add it to the meshmanager
 		fSize += 0.5f; //increment the size for the next orbit
+
 		uColor -= static_cast<uint>(decrements); //decrease the wavelength
+	}
+	fSize = 1.0f;
+
+	for (uint i = 0; i < m_uOrbits ; i++)
+	{
+		route.push_back(0);
+		//static vector3 start(1.0f, 0.0f, 0.0f);
+		//m_stops[i].push_back(start);
+		//start.x += .5;
+		
+	}
+	for (uint i = uSides; i < m_uOrbits + uSides; i++)
+	{
+		for (int j = 0; j < i; j++) {
+			double dAngle = 360.0 / i;
+			vector3 point2(glm::cos(glm::radians(dAngle*j))*(fSize-.1), glm::sin(glm::radians(dAngle*j))*(fSize-.1), 0);
+			m_stops[i - uSides].push_back(point2);
+			
+		}
+		fSize += 0.5f;
 	}
 }
 void Application::Update(void)
@@ -66,18 +89,35 @@ void Application::Display(void)
 		The following offset will orient the orbits as in the demo, start without it to make your life easier.
 	*/
 	//m4Offset = glm::rotate(IDENTITY_M4, 90.0f, AXIS_Z);
-
+	static float fTimer = 0;	//store the new timer
+	static uint uClock = m_pSystem->GenClock(); //generate a new clock for that timer
+	fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
+	float fTimeBetweenStops = 2.0;//in seconds
+								  //map the value to be between 0.0 and 1.0
+	float fPercentage = MapValue(fTimer, 0.0f, fTimeBetweenStops, 0.0f, 1.0f);
 	// draw a shapes
+	
 	for (uint i = 0; i < m_uOrbits; ++i)
 	{
 		m_pMeshMngr->AddMeshToRenderList(m_shapeList[i], glm::rotate(m4Offset, 90.0f, AXIS_X));
-
+		vector3 v3Start; //start point
+		vector3 v3End; //end point
+		 //current route
+		v3Start = m_stops[i][route[i]]; //start at the current route
+		v3End = m_stops[i][(route[i] + 1) % m_stops[i].size()]; //end at route +1 (if overboard will restart from 0)
 		//calculate the current position
-		vector3 v3CurrentPos = ZERO_V3;
+		vector3 v3CurrentPos = glm::lerp(v3Start, v3End, fPercentage);
+
 		matrix4 m4Model = glm::translate(m4Offset, v3CurrentPos);
 
+		if (fPercentage >= 1.0f)
+		{
+			route[i]++; //go to the next route
+			fTimer = m_pSystem->GetDeltaTime(uClock);//restart the clock
+			route[i] %= m_stops[i].size();//make sure we are within boundries
+		}
 		//draw spheres
-		m_pMeshMngr->AddSphereToRenderList(m4Model * glm::scale(vector3(0.1)), C_WHITE);
+		m_pMeshMngr->AddSphereToRenderList(m4Model * glm::scale(vector3(0.3)), C_WHITE);
 	}
 
 	//render list call

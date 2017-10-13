@@ -19,7 +19,10 @@ Date: 2017/05
 class Application
 {
 	uint m_uOrbits = 0; //number of shapes starting at 3 and increasing in sides
-	std::vector<uint> m_shapeList; //shape index for circles
+	std::vector<uint> m_shapeList;//shape index for circles
+	std::vector<std::vector<vector3>> m_stops;
+	std::vector<vector3> m_statspots;
+	std::vector<uint> route;
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 	
 private:
