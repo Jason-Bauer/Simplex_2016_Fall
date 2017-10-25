@@ -14,7 +14,10 @@ Date: 2017/05
 
 class Application
 {
-	vector3 m_v3Orientation; //orientation for the Model in vectors
+	vector3 m_v3Orientation;
+	vector3 m_v3Orientationx; 
+	vector3 m_v3Orientationy;
+	vector3 m_v3Orientationz;
 	Simplex::Model* m_pModel = nullptr; //Model to display
 	matrix4 m_m4Steve; //Model to world matrix for Steve
 	quaternion m_qOrientation; //orientation for the Model in quaternions

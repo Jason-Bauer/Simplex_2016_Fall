@@ -422,7 +422,6 @@ void Application::ProcessKeyboard(void)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
 	{
-		m_v3Orientation.x++;
 		quaternion q1 = glm::angleAxis(1.0f, vector3(1.0f, 0.0f, 0.0f));
 		m_qOrientation = m_qOrientation * q1;
 		//example on how even a quaternion if generated though Euler will have Gimbal Lock
@@ -433,7 +432,6 @@ void Application::ProcessKeyboard(void)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 	{
-		m_v3Orientation.y++;
 		quaternion q1 = glm::angleAxis(1.0f, vector3(0.0f, 1.0f, 0.0f));
 		m_qOrientation = m_qOrientation * q1;
 		//example on how even a quaternion if generated though Euler will have Gimbal Lock
@@ -443,7 +441,6 @@ void Application::ProcessKeyboard(void)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 	{
-		m_v3Orientation.z++;
 		quaternion q1 = glm::angleAxis(1.0f, vector3(0.0f, 0.0f, 1.0f));
 		m_qOrientation = m_qOrientation * q1;
 		//example on how even a quaternion if generated though Euler will have Gimbal Lock

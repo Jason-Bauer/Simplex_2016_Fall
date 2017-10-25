@@ -414,6 +414,27 @@ void Application::ProcessKeyboard(void)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 		m_pCameraMngr->MoveVertical(fSpeed);
 #pragma endregion
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+	{
+		quaternion xquat = glm::angleAxis(1.0f, vector3(1.0f, 0.0f, 0.0f));
+		m_qOrientation = m_qOrientation * xquat;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
+	{
+		quaternion yquat = glm::angleAxis(1.0f, vector3(0.0f, 1.0f, 0.0f));
+		m_qOrientation = m_qOrientation * yquat;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+	{
+		quaternion zedquat = glm::angleAxis(1.0f, vector3(0.0f, 0.0f, 1.0f));
+		m_qOrientation = m_qOrientation * zedquat;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	{
+		m_qOrientation = quaternion();
+	}
 }
 //Joystick
 void Application::ProcessJoystick(void)

@@ -34,24 +34,11 @@ void Application::Display(void)
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix(); //view Matrix
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix(); //Projection Matrix
 	
-	//Get a timer
-	static uint uClock = m_pSystem->GenClock();
-	float fTimer = m_pSystem->GetTimeSinceStart(uClock);
 
-	//calculate the current position
-	matrix4 m4Rotation = glm::rotate(IDENTITY_M4, fTimer * 60.0f, vector3(0.0f, 0.0f, 1.0f));
-	matrix4 m4Model;
-	for (uint i = 0; i < 2500; ++i)
-		m4Model = m4Rotation * glm::translate(IDENTITY_M4, vector3(2.5f, 0.0f, 0.0f)) * glm::transpose(m4Rotation);
+
 	
-	/*
-	//extra part, how to rotate around a point (in this case the base of the cone)
-	matrix4 m4Translation = glm::translate(IDENTITY_M4, vector3(0.0f, 0.5f, 0.0f));
-	matrix4 m4TransInverse = glm::translate(IDENTITY_M4, vector3(0.0f, -0.5f, 0.0f));
-	m4Model = m4TransInverse * m4Rotation * m4Translation;
-	*/
-
-	// render the object
+	matrix4 m4Model = glm::toMat4(m_qOrientation);
+	
 	m_pMesh->Render(m4Projection, m4View, m4Model);
 	
 	// draw a skybox
@@ -73,8 +60,7 @@ void Application::Display(void)
 	m_pMeshMngr->Print("FPS:");
 	m_pMeshMngr->PrintLine(std::to_string(m_pSystem->GetFPS()), C_RED);
 
-	m_pMeshMngr->Print("Time: ");
-	m_pMeshMngr->PrintLine(std::to_string(fTimer), C_RED);
+	
 #pragma endregion
 		
 	//render list call
