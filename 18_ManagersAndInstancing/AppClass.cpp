@@ -11,8 +11,6 @@ void Application::InitVariables(void)
 	//Set the position and target of the camera
 	//(I'm at [0,0,10], looking at [0,0,0] and up is the positive Y axis)
 	m_pCameraMngr->SetPositionTargetAndUp(AXIS_Z * 10.0f, ZERO_V3, AXIS_Y);
-	thing = new MyMesh();
-	thing->GenerateCylinder(1, 2, 10, C_WHITE);
 
 	//init the camera
 	m_pCamera = new MyCamera();
@@ -24,8 +22,17 @@ void Application::InitVariables(void)
 	//Get the singleton
 	m_pMyMeshMngr = MyMeshManager::GetInstance();
 	m_pMyMeshMngr->SetCamera(m_pCamera);
-	m_RB = new MyRigidBody(thing);
-	
+	m_pMesh = new MyMesh();
+	m_pMesh->GenerateTube(1.0f, 0.7f, 3.0f, 10, C_GREEN_LIME);
+
+	for (uint i = 0; i < 1; ++i)
+	{
+		matrix4* m4Temp = new matrix4();
+		*m4Temp = glm::translate(IDENTITY_M4, vector3(i * 2.0f, 0.0f, 0.0f)) *  ToMatrix4(m_qArcBall);
+		m4List.push_back(m4Temp);
+	}
+
+	m_RB = new MyRigidBody(m_pMesh);
 }
 void Application::Update(void)
 {
@@ -37,36 +44,28 @@ void Application::Update(void)
 
 	//Is the first person camera active?
 	CameraRotation();
-
-	//Add objects to the Manager
-	uint nCount = 0;
-	for (int j = -420; j < 420; j += 2)
-	{
-		for (int i = -420; i < 420; i += 2)
-		{
-			m_pMyMeshMngr->AddConeToRenderList(glm::translate(vector3(i, 0.0f, j)));
-			nCount++;
-		}
-	}
-	m_pMeshMngr->Print("Objects: " + std::to_string(nCount) + "\n", C_BLUE);
 }
 void Application::Display(void)
 {
 	//Clear the screen
 	ClearScreen();
-	thing->Render(m_pCamera, IDENTITY_M4);
-	m_RB->Render(m_pCamera,IDENTITY_M4);
+
+	*m4List[0] = ToMatrix4(m_qArcBall);
+
+	m_pMesh->Render(m_pCamera, m4List);
+	m_RB->Render(m_pCamera, *m4List[0]);
+
 	//Render the list of MyMeshManager
-	//m_pMyMeshMngr->Render();
+	m_pMyMeshMngr->Render();
 
 	//clear the MyMeshManager list
-	//m_pMyMeshMngr->ClearRenderList();
+	m_pMyMeshMngr->ClearRenderList();
 
 	//render list call
-	//m_uRenderCallCount = m_pMeshMngr->Render();
+	m_uRenderCallCount = m_pMeshMngr->Render();
 
 	//clear the render list
-	//m_pMeshMngr->ClearRenderList();
+	m_pMeshMngr->ClearRenderList();
 		
 	//draw gui
 	DrawGUI();
@@ -76,6 +75,16 @@ void Application::Display(void)
 }
 void Application::Release(void)
 {
+	SafeDelete(m_RB);
+
+	for (uint i = 0; i < m4List.size(); ++i)
+	{
+		SafeDelete(m4List[i]);
+	}
+	m4List.clear();
+
+	SafeDelete(m_pMesh);
+
 	//release the singleton
 	MyMeshManager::ReleaseInstance();
 

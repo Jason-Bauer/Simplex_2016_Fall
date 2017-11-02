@@ -382,9 +382,48 @@ void Application::ProcessKeyboard(void)
 	float fSpeed = 0.1f;
 	float fMultiplier = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
 		sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
-
-	if (fMultiplier)
+	newpos = m_pCamera->GetPosition();
+	if (fMultiplier) {
 		fSpeed *= 5.0f;
+	}
+	
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+	newpos.x += fSpeed;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+		newpos.x -= fSpeed;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	{
+		newpos.z -= fSpeed;
+
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+		
+		newpos.z += fSpeed;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+	{
+		
+	newpos.y += fSpeed;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+	{
+		
+		newpos.y -= fSpeed;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	{
+		m_pCamera->ResetCamera();
+		newpos = m_pCamera->GetPosition();
+	}
+	//m_pCamera->SetPosition(newpos);
+	target = newpos;
+	target.x += 1;
+	m_pCamera->SetPositionTargetAndUp(newpos, target, AXIS_Y);
 #pragma endregion
 }
 //Joystick

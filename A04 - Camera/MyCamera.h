@@ -101,7 +101,7 @@ public:
 	OUTPUT: position of the camera
 	*/
 	vector3 GetPosition(void);
-
+	
 	/*
 	USAGE: Sets the position of the camera
 	ARGUMENTS: vector3 a_v3Target -> What we want the camera to look at

@@ -5,6 +5,7 @@ Date: 2017/05
 #ifndef __APPLICATIONCLASS_H_
 #define __APPLICATIONCLASS_H_
 
+
 #include "Definitions.h"
 
 #include "ControllerConfiguration.h"
@@ -32,7 +33,8 @@ private:
 
 	vector4 m_v4ClearColor; //Color of the scene
 	bool m_bRunning = false; //Is app running?
-
+	vector3 newpos;
+	vector3 target;
 	sf::Window* m_pWindow = nullptr; //SFML window
 	Simplex::SystemSingleton* m_pSystem = nullptr; //Singleton of the system
 	Simplex::LightManager* m_pLightMngr = nullptr; //Light Manager of the system

@@ -10,18 +10,19 @@ void Application::InitVariables(void)
 
 	//Set the position and target of the camera
 	//(I'm at [0,0,10], looking at [0,0,0] and up is the positive Y axis)
-	m_pCameraMngr->SetPositionTargetAndUp(AXIS_Z * 10.0f, ZERO_V3, AXIS_Y);
-
+	//m_pCameraMngr->SetPositionTargetAndUp(vector3(0.0f, 3.0f, 20.0f), vector3(0.0f, 3.0f, 19.0f), AXIS_Y);
+	
 	//init the camera
 	m_pCamera = new MyCamera();
 	m_pCamera->SetPositionTargetAndUp(
-			vector3(0.0f, 3.0f, 20.0f), //Where my eyes are
+			vector3(0.0f, 3.0f, 0.0f), //Where my eyes are
 			vector3(0.0f, 3.0f, 19.0f), //where what I'm looking at is
 			AXIS_Y);					//what is up
-
+	
 	//Get the singleton
 	m_pMyMeshMngr = MyMeshManager::GetInstance();
 	m_pMyMeshMngr->SetCamera(m_pCamera);
+
 }
 void Application::Update(void)
 {
@@ -42,20 +43,22 @@ void Application::Update(void)
 			m_pMyMeshMngr->AddConeToRenderList(glm::translate(vector3(i, 0.0f, j)));
 		}
 	}
+
 }
 void Application::Display(void)
 {
 	//Clear the screen
 	ClearScreen();
-
+	//m_pCamera->CalculateViewMatrix();
+	//m_pCamera->CalculateProjectionMatrix();
 	//clear the render list
-	m_pMeshMngr->ClearRenderList();
+	//m_pMeshMngr->ClearRenderList();
 
 	//Render the list of MyMeshManager
 	m_pMyMeshMngr->Render();
 	
 	//render list call
-	m_uRenderCallCount = m_pMeshMngr->Render();
+	//m_uRenderCallCount = m_pMeshMngr->Render();
 
 	//clear the MyMeshManager list
 	m_pMyMeshMngr->ClearRenderList();

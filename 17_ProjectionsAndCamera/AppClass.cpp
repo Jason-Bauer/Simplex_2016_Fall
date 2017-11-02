@@ -40,10 +40,10 @@ void Application::Update(void)
 	CameraRotation();
 	
 	//Attach the model matrix that takes me from the world coordinate system
-	//m_pModel->SetModelMatrix(m_mModel);
+	m_pModel->SetModelMatrix(m_mModel);
 
 	//Send the model to render list
-	//m_pModel->AddToRenderList();
+	m_pModel->AddToRenderList();
 }
 void Application::Display(void)
 {
@@ -59,9 +59,9 @@ void Application::Display(void)
 	fPos -= 0.01f;
 
 	//draw the primitive
-	//m_pMesh->Render(m_pCamera->GetProjectionMatrix(), m_pCamera->GetViewMatrix(), ToMatrix4(m_qArcBall));
+	m_pMesh->Render(m_pCamera->GetProjectionMatrix(), m_pCamera->GetViewMatrix(), ToMatrix4(m_qArcBall));
 	//m_pMesh->Render(m_pCamera, ToMatrix4(m_qArcBall));
-	m_pMesh2->Render(m_pCamera, glm::translate(vector3(0.0f, 0.0f, -5.0f)));
+	//m_pMesh2->Render(m_pCamera, glm::translate(vector3(0.0f, 0.0f, -5.0f)));
 
 	//render list call
 	m_uRenderCallCount = m_pMeshMngr->Render();

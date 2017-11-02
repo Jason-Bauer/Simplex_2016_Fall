@@ -120,6 +120,7 @@ public:
 	-	std::vector<matrix4> a_ToWorldList
 	OUTPUT: ---
 	*/
+	void Render(MyCamera* a_pCamera, std::vector<matrix4*> a_ToWorldList);
 	void Render(MyCamera* a_pCamera, std::vector<matrix4> a_ToWorldList);
 	/*
 	USAGE: Adds a tri to the list points in the buffer to be compiled
@@ -217,7 +218,6 @@ public:
 	*/
 	void GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color = C_WHITE);
 #pragma endregion
-
 	std::vector<vector3> GetVertexList(void);
 };
 
