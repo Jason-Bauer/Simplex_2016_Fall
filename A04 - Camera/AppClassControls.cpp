@@ -347,29 +347,35 @@ void Application::CameraRotation(float a_fSpeed)
 	float fAngleX = 0.0f;
 	float fAngleY = 0.0f;
 	float fDeltaMouse = 0.0f;
-	if (MouseX < CenterX)
-	{
-		fDeltaMouse = static_cast<float>(CenterX - MouseX);
-		fAngleY += fDeltaMouse * a_fSpeed;
-	}
-	else if (MouseX > CenterX)
-	{
-		fDeltaMouse = static_cast<float>(MouseX - CenterX);
-		fAngleY -= fDeltaMouse * a_fSpeed;
-	}
-
 	if (MouseY < CenterY)
 	{
 		fDeltaMouse = static_cast<float>(CenterY - MouseY);
-		fAngleX -= fDeltaMouse * a_fSpeed;
+		fAngleY += fDeltaMouse * a_fSpeed;
+		target.y += fAngleY;
 	}
 	else if (MouseY > CenterY)
 	{
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
+		fAngleY -= fDeltaMouse * a_fSpeed;
+		target.y += fAngleY;
+	}
+
+	if (MouseX < CenterX)
+	{
+		fDeltaMouse = static_cast<float>(CenterX - MouseX);
+		fAngleX -= fDeltaMouse * a_fSpeed;
+		target.z += fAngleX;
+	}
+	else if (MouseX > CenterX)
+	{
+		fDeltaMouse = static_cast<float>(MouseX - CenterX);
 		fAngleX += fDeltaMouse * a_fSpeed;
+		target.z += fAngleX;
 	}
 	//Change the Yaw and the Pitch of the camera
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
+
+	m_pCamera->SetTarget(target);
 }
 //Keyboard
 void Application::ProcessKeyboard(void)
@@ -419,10 +425,10 @@ void Application::ProcessKeyboard(void)
 	{
 		m_pCamera->ResetCamera();
 		newpos = m_pCamera->GetPosition();
+		target = vector3(1, 3, 1);
 	}
 	//m_pCamera->SetPosition(newpos);
-	target = newpos;
-	target.x += 1;
+	
 	m_pCamera->SetPositionTargetAndUp(newpos, target, AXIS_Y);
 #pragma endregion
 }

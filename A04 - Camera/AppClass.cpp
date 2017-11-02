@@ -13,6 +13,7 @@ void Application::InitVariables(void)
 	//m_pCameraMngr->SetPositionTargetAndUp(vector3(0.0f, 3.0f, 20.0f), vector3(0.0f, 3.0f, 19.0f), AXIS_Y);
 	
 	//init the camera
+	target = vector3(newpos.x+1,newpos.y,newpos.z);
 	m_pCamera = new MyCamera();
 	m_pCamera->SetPositionTargetAndUp(
 			vector3(0.0f, 3.0f, 0.0f), //Where my eyes are
