@@ -11,6 +11,8 @@ void Application::InitVariables(void)
 	//Set the position and target of the camera
 	//(I'm at [0,0,10], looking at [0,0,0] and up is the positive Y axis)
 	m_pCameraMngr->SetPositionTargetAndUp(AXIS_Z * 10.0f, ZERO_V3, AXIS_Y);
+	thing = new MyMesh();
+	thing->GenerateCylinder(1, 2, 10, C_WHITE);
 
 	//init the camera
 	m_pCamera = new MyCamera();
@@ -22,7 +24,7 @@ void Application::InitVariables(void)
 	//Get the singleton
 	m_pMyMeshMngr = MyMeshManager::GetInstance();
 	m_pMyMeshMngr->SetCamera(m_pCamera);
-	
+	m_RB = new MyRigidBody(thing);
 	
 }
 void Application::Update(void)
@@ -52,18 +54,19 @@ void Application::Display(void)
 {
 	//Clear the screen
 	ClearScreen();
-
+	thing->Render(m_pCamera, IDENTITY_M4);
+	m_RB->Render(m_pCamera,IDENTITY_M4);
 	//Render the list of MyMeshManager
-	m_pMyMeshMngr->Render();
+	//m_pMyMeshMngr->Render();
 
 	//clear the MyMeshManager list
-	m_pMyMeshMngr->ClearRenderList();
+	//m_pMyMeshMngr->ClearRenderList();
 
 	//render list call
-	m_uRenderCallCount = m_pMeshMngr->Render();
+	//m_uRenderCallCount = m_pMeshMngr->Render();
 
 	//clear the render list
-	m_pMeshMngr->ClearRenderList();
+	//m_pMeshMngr->ClearRenderList();
 		
 	//draw gui
 	DrawGUI();

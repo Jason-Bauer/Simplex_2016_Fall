@@ -9,13 +9,15 @@ Date: 2017/05
 
 #include "ControllerConfiguration.h"
 #include "imgui\ImGuiObject.h"
-
+#include	"MyRigidBody.h"
 #include "MyMeshManager.h"
 namespace Simplex
 {
 
 class Application
 {
+	MyMesh* thing = nullptr;
+	MyRigidBody* m_RB = nullptr;
 	MyCamera* m_pCamera = nullptr;
 	MyMeshManager* m_pMyMeshMngr = nullptr;
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
