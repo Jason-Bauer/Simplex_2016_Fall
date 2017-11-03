@@ -1,7 +1,7 @@
 #include "MyCamera.h"
 using namespace Simplex;
 
-//Accessors
+//Accessors. But like actually now. BECAUSE SOMEHOW THEY WEREN'T THERE BEFORE!!!
 void Simplex::MyCamera::SetPosition(vector3 a_v3Position) { m_v3Position = a_v3Position; }
 vector3 Simplex::MyCamera::GetPosition(void) { return m_v3Position; }
 

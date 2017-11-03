@@ -368,27 +368,28 @@ void Application::CameraRotation(float a_fSpeed)
 		fAngleY += fDeltaMouse * a_fSpeed;
 	}
 
-	//get the axes;
+	//get the datas
 	vector3 up = m_pCamera->GetUp();
 	vector3 forward = m_pCamera->GetTarget() - m_pCamera->GetPosition();
 	vector3 right = glm::normalize(glm::cross(up, forward));
 
-	//keep track of the total rotations in Y axis
-	fTotalAngleY += fAngleY;
+	
+	bigtoty += fAngleY;
 
-	//clamp it to be between -90 and 90
-	if (fTotalAngleY < -90.0f) 
+	//make sure it doesn't go to big either way
+	if (bigtoty < -90.0f) 
 	{
-		fTotalAngleY = -90.0f;
+		bigtoty = -90.0f;
 	}
-	else if (fTotalAngleY > 90.0f)
+	else if (bigtoty > 90.0f)
 	{
-		fTotalAngleY = 90.0f;
+		bigtoty = 90.0f;
 	}
-	else { firstpersonquat = glm::angleAxis(fAngleY, right) * firstpersonquat; } //only update the ArcBall if it's between -90.0f and 90.0f
-
-	firstpersonquat = glm::angleAxis(fAngleX, up) * firstpersonquat; //update the x axis always
-
+	else 
+	{
+		firstpersonquat = glm::angleAxis(fAngleY, right) * firstpersonquat; 
+	} 
+	firstpersonquat = glm::angleAxis(fAngleX, up) * firstpersonquat; 
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
@@ -405,33 +406,36 @@ void Application::ProcessKeyboard(void)
 
 	if (fMultiplier)
 		fSpeed *= 5.0f;
-#pragma endregion
-
 	//get current camera data
-	vector3 pos = m_pCamera->GetPosition();
+	vector3 position = m_pCamera->GetPosition();
 	vector3 up = m_pCamera->GetUp();
-	vector3 forward = vector3(2.f * (firstpersonquat.x * firstpersonquat.z + firstpersonquat.w * firstpersonquat.y), 2.f * (firstpersonquat.y * firstpersonquat.z - firstpersonquat.w * firstpersonquat.x),	1.f - 2.f * (firstpersonquat.x * firstpersonquat.x + firstpersonquat.y * firstpersonquat.y));
+	//This formula for forward came from online but it works so.....
+	//http://nic-gamedev.blogspot.com/2011/11/quaternion-math-getting-local-axis.html 
+	//	*shrug
+
+	vector3 forward  = vector3(2.0f * (firstpersonquat.x * firstpersonquat.z + firstpersonquat.w * firstpersonquat.y), 2.0f * (firstpersonquat.y * firstpersonquat.z - firstpersonquat.w * firstpersonquat.x), 1.0f - 2.0f * (firstpersonquat.x * firstpersonquat.x + firstpersonquat.y * firstpersonquat.y));
 	vector3 right = glm::normalize(glm::cross(up, forward));
 
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) 
 	{
-		pos += forward * fSpeed;
+		position += forward * fSpeed;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		pos -= forward * fSpeed;
+		position -= forward * fSpeed;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		pos += right * fSpeed;
+		position += right * fSpeed;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		pos -= right * fSpeed;
+		position -= right * fSpeed;
 	}
 	
-	m_pCamera->SetPositionTargetAndUp(pos, pos + forward, up);
+	m_pCamera->SetPositionTargetAndUp(position, position + forward, up);
+#pragma endregion
 }
 //Joystick
 void Application::ProcessJoystick(void)
