@@ -22,7 +22,6 @@ void Application::ProcessMousePressed(sf::Event a_event)
 		break;
 	case sf::Mouse::Button::Middle:
 		gui.m_bMousePressed[1] = true;
-		m_bArcBall = true;
 		break;
 	case sf::Mouse::Button::Right:
 		gui.m_bMousePressed[2] = true;
@@ -43,7 +42,6 @@ void Application::ProcessMouseReleased(sf::Event a_event)
 		break;
 	case sf::Mouse::Button::Middle:
 		gui.m_bMousePressed[1] = false;
-		m_bArcBall = false;
 		break;
 	case sf::Mouse::Button::Right:
 		gui.m_bMousePressed[2] = false;
@@ -344,93 +342,96 @@ void Application::CameraRotation(float a_fSpeed)
 	MouseY = pt.y;
 
 	//Calculate the difference in view with the angle
+	float fDeltaMouse = 0.0f;
 	float fAngleX = 0.0f;
 	float fAngleY = 0.0f;
-	float fDeltaMouse = 0.0f;
-	if (MouseY < CenterY)
-	{
-		fDeltaMouse = static_cast<float>(CenterY - MouseY);
-		fAngleY += fDeltaMouse * a_fSpeed;
-		target.y += fAngleY;
-	}
-	else if (MouseY > CenterY)
-	{
-		fDeltaMouse = static_cast<float>(MouseY - CenterY);
-		fAngleY -= fDeltaMouse * a_fSpeed;
-		target.y += fAngleY;
-	}
 
 	if (MouseX < CenterX)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
-		fAngleX -= fDeltaMouse * a_fSpeed;
-		target.z += fAngleX;
+		fAngleX += fDeltaMouse * a_fSpeed;
 	}
 	else if (MouseX > CenterX)
 	{
 		fDeltaMouse = static_cast<float>(MouseX - CenterX);
-		fAngleX += fDeltaMouse * a_fSpeed;
-		target.z += fAngleX;
+		fAngleX -= fDeltaMouse * a_fSpeed;
 	}
-	//Change the Yaw and the Pitch of the camera
-	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 
-	m_pCamera->SetTarget(target);
+	if (MouseY < CenterY)
+	{
+		fDeltaMouse = static_cast<float>(CenterY - MouseY);
+		fAngleY -= fDeltaMouse * a_fSpeed;
+	}
+	else if (MouseY > CenterY)
+	{
+		fDeltaMouse = static_cast<float>(MouseY - CenterY);
+		fAngleY += fDeltaMouse * a_fSpeed;
+	}
+
+	//get the axes;
+	vector3 up = m_pCamera->GetUp();
+	vector3 forward = m_pCamera->GetTarget() - m_pCamera->GetPosition();
+	vector3 right = glm::normalize(glm::cross(up, forward));
+
+	//keep track of the total rotations in Y axis
+	fTotalAngleY += fAngleY;
+
+	//clamp it to be between -90 and 90
+	if (fTotalAngleY < -90.0f) 
+	{
+		fTotalAngleY = -90.0f;
+	}
+	else if (fTotalAngleY > 90.0f)
+	{
+		fTotalAngleY = 90.0f;
+	}
+	else { firstpersonquat = glm::angleAxis(fAngleY, right) * firstpersonquat; } //only update the ArcBall if it's between -90.0f and 90.0f
+
+	firstpersonquat = glm::angleAxis(fAngleX, up) * firstpersonquat; //update the x axis always
+
+	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
 void Application::ProcessKeyboard(void)
 {
 	/*
 	This is used for things that are continuously happening,
-	for discreet on/off use ProcessKeyboardPressed/Released
+	for discrete on/off use ProcessKeyboardPressed/Released
 	*/
 #pragma region Camera Position
 	float fSpeed = 0.1f;
 	float fMultiplier = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
 		sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
-	newpos = m_pCamera->GetPosition();
-	if (fMultiplier) {
+
+	if (fMultiplier)
 		fSpeed *= 5.0f;
+#pragma endregion
+
+	//get current camera data
+	vector3 pos = m_pCamera->GetPosition();
+	vector3 up = m_pCamera->GetUp();
+	vector3 forward = vector3(2.f * (firstpersonquat.x * firstpersonquat.z + firstpersonquat.w * firstpersonquat.y), 2.f * (firstpersonquat.y * firstpersonquat.z - firstpersonquat.w * firstpersonquat.x),	1.f - 2.f * (firstpersonquat.x * firstpersonquat.x + firstpersonquat.y * firstpersonquat.y));
+	vector3 right = glm::normalize(glm::cross(up, forward));
+
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) 
+	{
+		pos += forward * fSpeed;
 	}
-	
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-	newpos.x += fSpeed;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		newpos.x -= fSpeed;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	{
+		pos -= forward * fSpeed;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		newpos.z -= fSpeed;
-
+		pos += right * fSpeed;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		
-		newpos.z += fSpeed;
+		pos -= right * fSpeed;
 	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-	{
-		
-	newpos.y += fSpeed;
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-	{
-		
-		newpos.y -= fSpeed;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
-	{
-		m_pCamera->ResetCamera();
-		newpos = m_pCamera->GetPosition();
-		target = vector3(1, 3, 1);
-	}
-	//m_pCamera->SetPosition(newpos);
 	
-	m_pCamera->SetPositionTargetAndUp(newpos, target, AXIS_Y);
-#pragma endregion
+	m_pCamera->SetPositionTargetAndUp(pos, pos + forward, up);
 }
 //Joystick
 void Application::ProcessJoystick(void)

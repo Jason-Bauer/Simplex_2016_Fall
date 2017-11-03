@@ -2,12 +2,15 @@
 using namespace Simplex;
 
 //Accessors
-vector3 Simplex::MyCamera::GetPosition(void) { return m_v3Position; }
 void Simplex::MyCamera::SetPosition(vector3 a_v3Position) { m_v3Position = a_v3Position; }
+vector3 Simplex::MyCamera::GetPosition(void) { return m_v3Position; }
 
 void Simplex::MyCamera::SetTarget(vector3 a_v3Target) { m_v3Target = a_v3Target; }
+vector3 Simplex::MyCamera::GetTarget(void) { return m_v3Target; }
 
 void Simplex::MyCamera::SetUp(vector3 a_v3Up) { m_v3Up = a_v3Up; }
+vector3 Simplex::MyCamera::GetUp(void) { return glm::normalize(m_v3Up); }
+
 
 void Simplex::MyCamera::SetPerspective(bool a_bPerspective) { m_bPerspective = a_bPerspective; }
 
@@ -24,6 +27,10 @@ void Simplex::MyCamera::SetVerticalPlanes(vector2 a_v2Vertical) { m_v2Vertical =
 matrix4 Simplex::MyCamera::GetProjectionMatrix(void) { return m_m4Projection; }
 
 matrix4 Simplex::MyCamera::GetViewMatrix(void) { CalculateViewMatrix(); return m_m4View; }
+
+
+
+
 
 Simplex::MyCamera::MyCamera()
 {
@@ -108,7 +115,7 @@ Simplex::MyCamera::~MyCamera(void)
 
 void Simplex::MyCamera::ResetCamera(void)
 {
-	m_v3Position = vector3(0.0f, 3.0f, 1.0f); //Where my camera is located
+	m_v3Position = vector3(0.0f, 0.0f, 10.0f); //Where my camera is located
 	m_v3Target = vector3(0.0f, 0.0f, 0.0f); //What I'm looking at
 	m_v3Up = vector3(0.0f, 1.0f, 0.0f); //What is up
 
@@ -130,7 +137,7 @@ void Simplex::MyCamera::SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v
 {
 	m_v3Position = a_v3Position;
 	m_v3Target = a_v3Target;
-	m_v3Up = a_v3Position + a_v3Upward;
+	m_v3Up = a_v3Upward;
 	CalculateProjectionMatrix();
 }
 
@@ -138,7 +145,6 @@ void Simplex::MyCamera::CalculateViewMatrix(void)
 {
 	//Calculate the look at
 	m_m4View = glm::lookAt(m_v3Position, m_v3Target, m_v3Up);
-	 
 }
 
 void Simplex::MyCamera::CalculateProjectionMatrix(void)

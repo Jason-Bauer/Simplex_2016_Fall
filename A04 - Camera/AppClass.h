@@ -5,13 +5,13 @@ Date: 2017/05
 #ifndef __APPLICATIONCLASS_H_
 #define __APPLICATIONCLASS_H_
 
-
 #include "Definitions.h"
 
 #include "ControllerConfiguration.h"
 #include "imgui\ImGuiObject.h"
 
 #include "MyMeshManager.h"
+#include "MyCamera.h"
 namespace Simplex
 {
 
@@ -20,6 +20,8 @@ class Application
 	MyCamera* m_pCamera = nullptr; //Camera class
 	MyMeshManager* m_pMyMeshMngr = nullptr; //My Mesh Manager
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //Programmer
+
+	float fTotalAngleY = 0.0f;
 private:
 	static ImGuiObject gui; //GUI object
 
@@ -28,13 +30,13 @@ private:
 
 	vector3 m_v3Mouse = vector3(); //position of the mouse in the window
 	bool m_bFPC = false;// First Person Camera flag
+	quaternion firstpersonquat; //FPC quaternion
 	bool m_bArcBall = false;// Arcball flag
 	quaternion m_qArcBall; //ArcBall quaternion
 
 	vector4 m_v4ClearColor; //Color of the scene
 	bool m_bRunning = false; //Is app running?
-	vector3 newpos;
-	vector3 target;
+
 	sf::Window* m_pWindow = nullptr; //SFML window
 	Simplex::SystemSingleton* m_pSystem = nullptr; //Singleton of the system
 	Simplex::LightManager* m_pLightMngr = nullptr; //Light Manager of the system
@@ -180,7 +182,7 @@ private:
 	ARGUMENTS: float a_fSpeed = 0.005f
 	OUTPUT: ---
 	*/
-	void CameraRotation(float a_fSpeed = 0.005f);
+	void CameraRotation(float a_fSpeed = 0.025f);
 #pragma endregion
 
 #pragma region Process Events

@@ -6,7 +6,6 @@ Date: 2017/06
 #define __MYMESHMANAGER_H_
 #include "MyMesh.h"
 #include "MyCamera.h"
-
 namespace Simplex
 {
 
