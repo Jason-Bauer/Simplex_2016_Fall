@@ -276,16 +276,123 @@ void MyRigidBody::AddToRenderList(void)
 
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
+	float thisrad;
+	float otherrad;
+	vector3 v3_thisHalfWidth = this->GetHalfWidth();
+	vector3 v3_otherHalfWidth = a_pOther->GetHalfWidth();
 
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
+	vector3 v3_thisLocalAxes[3];
+	v3_thisLocalAxes[0] = vector3(this->GetModelMatrix() * vector4(AXIS_X, 0.f));
+	v3_thisLocalAxes[1] = vector3(this->GetModelMatrix() * vector4(AXIS_Y, 0.f));
+	v3_thisLocalAxes[2] = vector3(this->GetModelMatrix() * vector4(AXIS_Z, 0.f));
+
+	vector3 v3_otherLocalAxes[3];
+	v3_otherLocalAxes[0] = vector3(a_pOther->GetModelMatrix() * vector4(AXIS_X, 0.f));
+	v3_otherLocalAxes[1] = vector3(a_pOther->GetModelMatrix() * vector4(AXIS_Y, 0.f));
+	v3_otherLocalAxes[2] = vector3(a_pOther->GetModelMatrix() * vector4(AXIS_Z, 0.f));
+
+	matrix3 mat3rots;
+	matrix3 absmat3rots;
+
+	for (uint i = 0; i < 3; ++i) 
+	{
+		for (uint j = 0; j < 3; ++j)
+		{
+			mat3rots[i][j] = glm::dot(v3_thisLocalAxes[i], v3_otherLocalAxes[j]);
+			absmat3rots[i][j] = glm::abs(mat3rots[i][j]) + 0.001f;
+		}
+	}
+
+	vector3 translation = a_pOther->GetCenterGlobal() - this->GetCenterGlobal();
+	translation = vector3(glm::dot(translation, v3_thisLocalAxes[0]),
+		glm::dot(translation, v3_thisLocalAxes[1]),
+		glm::dot(translation, v3_thisLocalAxes[2]));
+
+	// Test L = B0, L = B1, L = B2
+	for (uint i = 0; i < 3; i++) 
+	{
+		thisrad = v3_thisHalfWidth[0] * absmat3rots[0][i] + v3_thisHalfWidth[1] * absmat3rots[1][i] + v3_thisHalfWidth[2] * absmat3rots[2][i];
+		otherrad = v3_otherHalfWidth[i];
+
+		if (glm::abs(translation[0] * mat3rots[0][i] + translation[1] * mat3rots[1][i] + translation[2] * mat3rots[2][i]) > thisrad + otherrad) 
+		{
+			switch (i) {
+			case 0:
+				return eSATResults::SAT_BX;
+			case 1:
+				return eSATResults::SAT_BY;
+			default:
+				return eSATResults::SAT_BZ;
+			}
+		}
+	}
+
+	// Test L = A0 x B0
+	thisrad = v3_thisHalfWidth[1] * absmat3rots[2][0] + v3_thisHalfWidth[2] * absmat3rots[1][0];
+	otherrad = v3_otherHalfWidth[1] * absmat3rots[0][2] + v3_otherHalfWidth[2] * absmat3rots[0][1];
+	if (glm::abs(translation[2] * mat3rots[1][0] - translation[1] * mat3rots[2][0]) > thisrad + otherrad) 
+	{
+		return eSATResults::SAT_AXxBX;
+	}
+	// Test L = A0 x B1
+	thisrad = v3_thisHalfWidth[1] * absmat3rots[2][1] + v3_thisHalfWidth[2] * absmat3rots[1][1];
+	otherrad = v3_otherHalfWidth[0] * absmat3rots[0][2] + v3_otherHalfWidth[2] * absmat3rots[0][0];
+	if (glm::abs(translation[2] * mat3rots[1][1] - translation[1] * mat3rots[2][1]) > thisrad + otherrad) 
+	{
+		return eSATResults::SAT_AXxBY;
+	}
+	// Test L = A0 x B2
+	thisrad = v3_thisHalfWidth[1] * absmat3rots[2][2] + v3_thisHalfWidth[2] * absmat3rots[1][2];
+	otherrad = v3_otherHalfWidth[0] * absmat3rots[0][1] + v3_otherHalfWidth[1] * absmat3rots[0][0];
+	if (glm::abs(translation[2] * mat3rots[1][2] - translation[1] * mat3rots[2][2]) > thisrad + otherrad) 
+	{
+		return eSATResults::SAT_AXxBZ;
+	}
+	// Test L = A1 x B0
+	thisrad = v3_thisHalfWidth[0] * absmat3rots[2][0] + v3_thisHalfWidth[2] * absmat3rots[0][0];
+	otherrad = v3_otherHalfWidth[1] * absmat3rots[1][2] + v3_otherHalfWidth[2] * absmat3rots[1][1];
+	if (glm::abs(translation[0] * mat3rots[2][0] - translation[2] * mat3rots[0][0]) > thisrad + otherrad) 
+	{
+		return eSATResults::SAT_AYxBX;
+	}
+	// Test L = A1 x B1
+	thisrad = v3_thisHalfWidth[0] * absmat3rots[2][1] + v3_thisHalfWidth[2] * absmat3rots[0][1];
+	otherrad = v3_otherHalfWidth[0] * absmat3rots[1][2] + v3_otherHalfWidth[2] * absmat3rots[1][0];
+	if (glm::abs(translation[0] * mat3rots[2][1] - translation[2] * mat3rots[0][1]) > thisrad + otherrad) 
+	{
+		return eSATResults::SAT_AYxBY;
+	}
+
+	// Test L = A1 x B2
+	thisrad = v3_thisHalfWidth[0] * absmat3rots[2][2] + v3_thisHalfWidth[2] * absmat3rots[0][2];
+	otherrad = v3_otherHalfWidth[0] * absmat3rots[1][1] + v3_otherHalfWidth[1] * absmat3rots[1][0];
+	if (glm::abs(translation[0] * mat3rots[2][2] - translation[2] * mat3rots[0][2]) > thisrad + otherrad) 
+	{
+		return eSATResults::SAT_AYxBZ;
+	}
+	// Test L = A2 x B0
+	thisrad = v3_thisHalfWidth[0] * absmat3rots[1][0] + v3_thisHalfWidth[1] * absmat3rots[0][0];
+	otherrad = v3_otherHalfWidth[1] * absmat3rots[2][2] + v3_otherHalfWidth[2] * absmat3rots[2][1];
+	if (glm::abs(translation[1] * mat3rots[0][0] - translation[0] * mat3rots[1][0]) > thisrad + otherrad) 
+	{
+		return eSATResults::SAT_AZxBX;
+	}
+
+	// Test L = A2 x B1
+	thisrad = v3_thisHalfWidth[0] * absmat3rots[1][1] + v3_thisHalfWidth[1] * absmat3rots[0][1];
+	otherrad = v3_otherHalfWidth[0] * absmat3rots[2][2] + v3_otherHalfWidth[2] * absmat3rots[2][0];
+	if (glm::abs(translation[1] * mat3rots[0][1] - translation[0] * mat3rots[1][1]) > thisrad + otherrad)
+	{
+		return eSATResults::SAT_AZxBY;
+	}
+	// Test L = A2 x B2
+	thisrad = v3_thisHalfWidth[0] * absmat3rots[1][2] + v3_thisHalfWidth[1] * absmat3rots[0][2];
+	otherrad = v3_otherHalfWidth[0] * absmat3rots[2][1] + v3_otherHalfWidth[1] * absmat3rots[2][0];
+	if (glm::abs(translation[1] * mat3rots[0][2] - translation[0] * mat3rots[1][2]) > thisrad + otherrad) 
+	{
+		return eSATResults::SAT_AZxBZ;
+	}
+
 
 	//there is no axis test that separates this two objects
 	return eSATResults::SAT_NONE;
