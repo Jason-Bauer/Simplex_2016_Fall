@@ -209,7 +209,6 @@ bool Simplex::MyEntity::IsInDimension(uint a_uDimension)
 }
 bool Simplex::MyEntity::SharesDimension(MyEntity* const a_pOther)
 {
-	
 	//special case: if there are no dimensions on either MyEntity
 	//then they live in the special global dimension
 	if (0 == m_nDimensionCount)
@@ -223,6 +222,7 @@ bool Simplex::MyEntity::SharesDimension(MyEntity* const a_pOther)
 	//for each dimension on both Entities we check if there is a common dimension
 	for (uint i = 0; i < m_nDimensionCount; ++i)
 	{
+
 		for (uint j = 0; j < a_pOther->m_nDimensionCount; j++)
 		{
 			if (m_DimensionArray[i] == a_pOther->m_DimensionArray[j])

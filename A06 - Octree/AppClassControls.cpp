@@ -112,39 +112,41 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		m_pCameraMngr->SetFPS(bFPSControl);
 		break;
 	case sf::Keyboard::PageUp:
+		//updates id of octant to display
 		++m_uOctantID;
-		/*
-		if (m_uOctantID >= m_pRoot->GetOctantCount())
-			m_uOctantID = - 1;
-		*/
+		if (m_uOctantID >= m_pRoot->GetLeafCount())
+			m_uOctantID = -1;
+		
 		break;
 	case sf::Keyboard::PageDown:
+		//updates id of octant to display
 		--m_uOctantID;
-		/*
-		if (m_uOctantID >= m_pRoot->GetOctantCount())
-			m_uOctantID = - 1;
-		*/
+		if (m_uOctantID < -1)
+			m_uOctantID = -1;
+		
 		break;
 	case sf::Keyboard::Add:
+		//check and add more octant layers
 		if (m_uOctantLevels < 4)
 		{
 			m_pEntityMngr->ClearDimensionSetAll();
-			++m_uOctantLevels;
-			/*
+
+			//re-create the octree
 			SafeDelete(m_pRoot);
+			++m_uOctantLevels;
 			m_pRoot = new MyOctant(m_uOctantLevels, 5);
-			*/
 		}
 		break;
 	case sf::Keyboard::Subtract:
+		//check and subtract layer
 		if (m_uOctantLevels > 0)
 		{
 			m_pEntityMngr->ClearDimensionSetAll();
-			--m_uOctantLevels;
-			/*
+
+			//re-create octree
 			SafeDelete(m_pRoot);
+			--m_uOctantLevels;
 			m_pRoot = new MyOctant(m_uOctantLevels, 5);
-			*/
 		}
 		break;
 	case sf::Keyboard::LShift:
